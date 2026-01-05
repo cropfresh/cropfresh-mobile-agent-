@@ -2,68 +2,68 @@
 name: CI
 
 on:
-    push:
-        branches: [main, develop]
-    pull_request:
-        branches: [main, develop]
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
-    analyze-and-test:
-        name: Analyze & Test
-        runs-on: ubuntu-latest
+  analyze-and-test:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Setup Flutter
-              uses: subosito/flutter-action@v2
-              with:
-                  flutter-version: "3.32.2"
-                  channel: "stable"
-                  cache: true
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.29.2"
+          channel: "stable"
+          cache: true
 
-            - name: Get dependencies
-              run: flutter pub get
+      - name: Get dependencies
+        run: flutter pub get
 
-            - name: Analyze code
-              run: flutter analyze --no-fatal-infos
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
 
-            - name: Run tests
-              run: flutter test || echo "No tests configured"
+      - name: Run tests
+        run: flutter test || echo "No tests configured"
 
-    build-android:
-        name: Build Android
-        runs-on: ubuntu-latest
-        needs: analyze-and-test
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    needs: analyze-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Setup Flutter
-              uses: subosito/flutter-action@v2
-              with:
-                  flutter-version: "3.32.2"
-                  channel: "stable"
-                  cache: true
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.29.2"
+          channel: "stable"
+          cache: true
 
-            - name: Setup Java
-              uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "17"
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
 
-            - name: Get dependencies
-              run: flutter pub get
+      - name: Get dependencies
+        run: flutter pub get
 
-            - name: Build APK
-              run: flutter build apk --release
+      - name: Build APK
+        run: flutter build apk --release
 
-            - name: Upload APK
-              uses: actions/upload-artifact@v4
-              with:
-                  name: agent-app-release
-                  path: build/app/outputs/flutter-apk/app-release.apk
-                  retention-days: 30
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
